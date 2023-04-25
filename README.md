@@ -1,11 +1,13 @@
 # WorkplaceWebService
 
-Workplaces and Positions web service for university assignment
+Workplaces and Positions web service combined with Employees web service for university asignment
+
+Each workplace has employees. The workplace resource is supplemented with an employees array and stores employee IDs
 
 # Instructions
 
-1. git clone https://github.com/AleksandrasJ/WorkplaceWebService.git
-2. cd WorkplaceWebService
+1. git clone https://github.com/AleksandrasJ/WorkplaceEmployees.git
+2. cd WorkplaceEmployees
 3. docker-compose up -d
 
 # Requests
@@ -32,10 +34,28 @@ BODY:
     "specialities": [
         "Cloud",
         "Security"
+    ],
+    "employees": [
+        {
+            "firstName": "Another",
+            "lastName": "Employee",
+            "birthDate": "2000-03-22T05:14:25.624Z",
+            "homeAddress": "1 Street, Vilnius",
+            "currentSalary": 1000,
+            "positionName": "SoftwareEnginer"
+        },
+        {
+            "firstName": "Other",
+            "lastName": "Employee",
+            "birthDate": "2000-03-22T05:14:25.624Z",
+            "homeAddress": "1 Alley, Kaunas",
+            "currentSalary": 1000,
+            "positionName": "Ceo"
+        }
     ]
 }
 ```
-URL: http://localhost:80/workplaces/1/positions<br />
+URL: http://localhost:80/workplaces/5/positions<br />
 BODY: 
 ```
 {
@@ -54,7 +74,7 @@ BODY:
 ```
 ## PUT
 
-URL: http://localhost:80/workplaces/1<br />
+URL: http://localhost:80/workplaces/5<br />
 BODY: 
 ```
 {
@@ -68,10 +88,21 @@ BODY:
         "Systems services",
         "Resiliency services",
         "Internet of Things"
-    ]
+    ],
+    "employees": {
+        {
+            "firstName": "Some",
+            "lastName": "One",
+            "birthDate": "2000-03-22T05:14:25.624Z",
+            "homeAddress": "1 Square, Vilnius",
+            "currentSalary": 1000,
+            "positionName": "HR"
+        }
+    }
+
 }
 ```
-URL: http://localhost:80/workplaces/1/positions/1<br />
+URL: http://localhost:80/workplaces/5/positions/1<br />
 BODY: 
 ```
 {
