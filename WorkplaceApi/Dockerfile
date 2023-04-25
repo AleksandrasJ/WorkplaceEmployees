@@ -1,10 +1,10 @@
 FROM node:19.7.0-alpine
 
-ADD . /app
-
 WORKDIR /app
 
-COPY package*.json /app/
+COPY ./package*.json /app/
+
+COPY . .
 
 RUN npm install
 

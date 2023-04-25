@@ -38,14 +38,17 @@ router.post('/', async (req, res) => {
         refPositions: `/workplaces/${lastID + 1}/positions`
     });
 
+    console.log(req.body.companyName);
+
     let employeesArray = [];
     let success = true;
-    if (req.body.employees) {
+    if (req.body.employees && req.body.companyName) {
         let temp = req.body.employees;
         for (let employee of temp) {
-            await axios.post('http://localhost:5000/api/employees', employee).then(response => {
+            await axios.post('http://employees:80/api/employees', employee).then(response => {
                 employeesArray.push(response.data.id);
             }).catch(error => {
+                console.log(error);
                 success = false;
             });
         }
@@ -111,7 +114,7 @@ router.put('/:id', async (req, res) => {
     if (req.body.employees) {
         let temp = req.body.employees;
         for (let employee of temp) {
-            await axios.post('http://localhost:5000/api/employees', employee).then(response => {
+            await axios.post('http://employees:80/api/employees', employee).then(response => {
                 employeesArray.push(response.data.id);
             }).catch(error => {
                 success = false;
@@ -147,7 +150,7 @@ router.delete('/:id', async (req, res) => {
         if (result) {
             let temp = result.employees;
             for (let employee of temp) {
-                axios.delete(`http://localhost:5000/api/employees/${employee}`).then(response => { }).catch(error => { });
+                axios.delete(`http://employees:80/api/employees/${employee}`).then(response => { }).catch(error => { });
             }
             res.status(204);
             res.send('');
