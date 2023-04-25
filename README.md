@@ -119,7 +119,7 @@ BODY:
     "salary": 4300
 }
 ```
-URL: http://localhost:80/positions/1
+URL: http://localhost:80/positions/5
 ```
 {
     "positionName": "Java Developer",
