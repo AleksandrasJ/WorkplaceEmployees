@@ -38,8 +38,6 @@ router.post('/', async (req, res) => {
         refPositions: `/workplaces/${lastID + 1}/positions`
     });
 
-    console.log(req.body.companyName);
-
     let employeesArray = [];
     let success = true;
     if (req.body.employees && req.body.companyName) {
