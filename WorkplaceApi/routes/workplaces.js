@@ -139,7 +139,7 @@ router.put('/:id', async (req, res) => {
         });
     } else {
         res.status(500);
-        res.send(errorTemplate(500, 'Failee to update employee!'));
+        res.send(errorTemplate(500, 'Failee to create employee!'));
     }
 });
 
