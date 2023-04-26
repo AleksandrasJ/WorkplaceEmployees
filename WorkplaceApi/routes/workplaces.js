@@ -48,7 +48,6 @@ router.post('/', async (req, res) => {
             await axios.post('http://employees:80/api/employees', employee).then(response => {
                 employeesArray.push(response.data.id);
             }).catch(error => {
-                console.log(error);
                 success = false;
             });
         }
@@ -72,7 +71,7 @@ router.post('/', async (req, res) => {
         }
     } else {
         res.status(500);
-        res.send(errorTemplate(500, 'Something went wrong!'));
+        res.send(errorTemplate(500, 'Failed to create employee!'));
     }
 
 });
@@ -140,7 +139,7 @@ router.put('/:id', async (req, res) => {
         });
     } else {
         res.status(500);
-        res.send(errorTemplate(500, 'Something went wrong!'));
+        res.send(errorTemplate(500, 'Failee to update employee!'));
     }
 });
 
