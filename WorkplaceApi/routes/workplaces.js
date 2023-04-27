@@ -6,15 +6,48 @@ import axios from 'axios';
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    await Workplace.find().then(results => {
+    await Workplace.find().then(async results => {
         if (results.length > 0) {
+            let resultsArray = [];
+
+            for (let result of results) {
+                let ids = [];
+                let employeesArray = [];
+
+                result = result.toJSON();
+
+                ids = result.employees;
+                result.employees = [];
+
+                delete result.__v;
+
+                for (let id of ids) {
+                    await axios.get(`http://employees:80/api/employees/${id}`).then(response => {
+                        let employeeBody = {
+                            firstName: response.data.firstName,
+                            lastName: response.data.lastName,
+                            homeAddress: response.data.homeAddress,
+                            currentSalary: response.data.currentSalary
+                        };
+                        employeesArray.push(employeeBody);
+                    }).catch(error => {
+                        console.log(error);
+                    });
+                }
+                console.log(employeesArray);
+
+                result.employees = employeesArray;
+                console.log(result);
+                resultsArray.push(result);
+            }
             res.status(200);
-            res.send(results);
+            res.send(resultsArray);
         } else {
             res.status(404);
             res.send(errorTemplate(404, 'No workplaces found!'));
         }
     }).catch(err => {
+        console.log(err);
         res.status(500);
         res.send(errorTemplate(500, 'Failed to collect data!'));
     });
@@ -40,12 +73,16 @@ router.post('/', async (req, res) => {
 
     let employeesArray = [];
     let success = true;
+    let statusCode;
+    let message;
     if (req.body.employees && req.body.companyName) {
         let temp = req.body.employees;
         for (let employee of temp) {
             await axios.post('http://employees:80/api/employees', employee).then(response => {
                 employeesArray.push(response.data.id);
             }).catch(error => {
+                statusCode = error.data.status;
+                message = error.data.message;
                 success = false;
             });
         }
@@ -68,15 +105,40 @@ router.post('/', async (req, res) => {
             res.send(errorTemplate(400, 'To create resource compnayName is needed!'));
         }
     } else {
-        res.status(500);
-        res.send(errorTemplate(500, 'Failed to create employee!'));
+        res.status(statusCode);
+        res.send(errorTemplate(statusCode, message));
     }
 
 });
 
 router.get('/:id', async (req, res) => {
-    await Workplace.findOne({ _id: req.params.id }).then(result => {
+    await Workplace.findOne({ _id: req.params.id }).then(async result => {
         if (result !== null) {
+            let ids = [];
+            let employeesArray = [];
+
+            result = result.toJSON();
+
+            ids = result.employees;
+            result.employees = [];
+
+            delete result.__v;
+
+            for (let id of ids) {
+                await axios.get(`http://employees:80/api/employees/${id}`).then(response => {
+                    let employeeBody = {
+                        firstName: response.data.firstName,
+                        lastName: response.data.lastName,
+                        homeAddress: response.data.homeAddress,
+                        currentSalary: response.data.currentSalary
+                    };
+                    employeesArray.push(employeeBody);
+                }).catch(error => {
+                    console.log(error);
+                });
+            }
+
+            result.employees = employeesArray;
             res.status(200);
             res.send(result);
         } else {
@@ -99,14 +161,15 @@ router.put('/:id', async (req, res) => {
         specialities: req.body.specialities
     });
 
-    let employeesArray = [];
-
     await Workplace.findOne({ _id: req.params.id }).then(result => {
         employeesArray = result.employees;
     }).catch(err => {
         console.log("Error!");
     });
 
+    let employeesArray = [];
+    let statusCode;
+    let message;
     let success = true;
     if (req.body.employees) {
         let temp = req.body.employees;
@@ -114,6 +177,8 @@ router.put('/:id', async (req, res) => {
             await axios.post('http://employees:80/api/employees', employee).then(response => {
                 employeesArray.push(response.data.id);
             }).catch(error => {
+                statusCode = error.data.status;
+                message = error.data.message;
                 success = false;
             });
         }
@@ -136,8 +201,8 @@ router.put('/:id', async (req, res) => {
             res.send(errorTemplate(500, 'Failed to collect data!'));
         });
     } else {
-        res.status(500);
-        res.send(errorTemplate(500, 'Failee to create employee!'));
+        res.status(statusCode);
+        res.send(errorTemplate(statusCode, message));
     }
 });
 
