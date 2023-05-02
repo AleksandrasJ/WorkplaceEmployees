@@ -27,17 +27,14 @@ router.get('/', async (req, res) => {
                             firstName: response.data.firstName,
                             lastName: response.data.lastName,
                             homeAddress: response.data.homeAddress,
-                            currentSalary: response.data.currentSalary
+                            currentSalary: response.data.currentSalary,
+                            position: response.data.role.position
                         };
                         employeesArray.push(employeeBody);
                     }).catch(error => {
-                        console.log(error);
                     });
                 }
-                console.log(employeesArray);
-
                 result.employees = employeesArray;
-                console.log(result);
                 resultsArray.push(result);
             }
             res.status(200);
@@ -47,7 +44,6 @@ router.get('/', async (req, res) => {
             res.send(errorTemplate(404, 'No workplaces found!'));
         }
     }).catch(err => {
-        console.log(err);
         res.status(500);
         res.send(errorTemplate(500, 'Failed to collect data!'));
     });
@@ -81,8 +77,8 @@ router.post('/', async (req, res) => {
             await axios.post('http://employees:80/api/employees', employee).then(response => {
                 employeesArray.push(response.data.id);
             }).catch(error => {
-                statusCode = error.data.status;
-                message = error.data.message;
+                statusCode = error.response.data.status;
+                message = error.response.data.title;
                 success = false;
             });
         }
@@ -130,11 +126,11 @@ router.get('/:id', async (req, res) => {
                         firstName: response.data.firstName,
                         lastName: response.data.lastName,
                         homeAddress: response.data.homeAddress,
-                        currentSalary: response.data.currentSalary
+                        currentSalary: response.data.currentSalary,
+                        position: response.data.role.position
                     };
                     employeesArray.push(employeeBody);
                 }).catch(error => {
-                    console.log(error);
                 });
             }
 
@@ -152,22 +148,28 @@ router.get('/:id', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
+    let specialities = [];
+    let employeesArray = [];
+
+    await Workplace.findOne({ _id: req.params.id }).then(result => {
+        employeesArray = result.employees;
+        specialities = result.specialities;
+    }).catch(err => {
+    });
+
+    if (req.body.specialities != null) {
+        specialities = specialities.concat(req.body.specialities);
+    }
+
     let workplace = new Workplace({
         _id: req.params.id,
         companyName: req.body.companyName,
         description: req.body.description,
         industry: req.body.industry,
         website: req.body.website,
-        specialities: req.body.specialities
+        specialities: specialities
     });
 
-    await Workplace.findOne({ _id: req.params.id }).then(result => {
-        employeesArray = result.employees;
-    }).catch(err => {
-        console.log("Error!");
-    });
-
-    let employeesArray = [];
     let statusCode;
     let message;
     let success = true;
@@ -177,8 +179,8 @@ router.put('/:id', async (req, res) => {
             await axios.post('http://employees:80/api/employees', employee).then(response => {
                 employeesArray.push(response.data.id);
             }).catch(error => {
-                statusCode = error.data.status;
-                message = error.data.message;
+                statusCode = error.response.data.status;
+                message = error.response.data.title;
                 success = false;
             });
         }

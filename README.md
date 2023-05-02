@@ -89,7 +89,7 @@ BODY:
         "Resiliency services",
         "Internet of Things"
     ],
-    "employees": {
+    "employees": [
         {
             "firstName": "Some",
             "lastName": "One",
@@ -98,7 +98,7 @@ BODY:
             "currentSalary": 1000,
             "positionName": "HR"
         }
-    }
+    ]
 
 }
 ```
